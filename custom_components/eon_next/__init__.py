@@ -2,6 +2,7 @@
 
 import logging
 from .eonnext import EonNext
+from homeassistant.const import Platform
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -9,6 +10,7 @@ DOMAIN = "eon_next"
 CONF_EMAIL = "email"
 CONF_PASSWORD = "password"
 
+PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass, entry):
     """Set up platform from a ConfigEntry."""
@@ -21,9 +23,10 @@ async def async_setup_entry(hass, entry):
 
         hass.data[DOMAIN][entry.entry_id] = api
 
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, "sensor")
-        )
+        #hass.async_create_task(
+        #    hass.config_entries.async_forward_entry_setup(entry, "sensor")
+        #)
+        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
         return True
     
