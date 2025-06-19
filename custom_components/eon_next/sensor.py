@@ -16,6 +16,8 @@ from . import DOMAIN
 from .eonnext import METER_TYPE_GAS, METER_TYPE_ELECTRIC
 
 _LOGGER = logging.getLogger(__name__)
+# Eon updates the reading only every two weeks ! - so set this to be much mroe than every minute, which is HA default.
+SCAN_INTERVAL = timedelta(hours=12)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -51,6 +53,7 @@ class LatestReadingDateSensor(SensorEntity):
         self._attr_device_class = SensorDeviceClass.DATE
         self._attr_icon = "mdi:calendar"
         self._attr_unique_id = self.meter.get_serial() + "__" + "reading_date"
+        self.update_interval = SCAN_INTERVAL
     
 
     async def async_update(self) -> None:
@@ -70,6 +73,7 @@ class LatestElectricKwhSensor(SensorEntity):
         self._attr_state_class = "total"
         self._attr_icon = "mdi:meter-electric-outline"
         self._attr_unique_id = self.meter.get_serial() + "__" + "electricity_kwh"
+        self.update_interval = SCAN_INTERVAL
     
 
     async def async_update(self) -> None:
@@ -89,7 +93,7 @@ class LatestGasKwhSensor(SensorEntity):
         self._attr_state_class = "total"
         self._attr_icon = "mdi:meter-gas-outline"
         self._attr_unique_id = self.meter.get_serial() + "__" + "gas_kwh"
-    
+        self.update_interval = SCAN_INTERVAL
 
     async def async_update(self) -> None:
         self._attr_native_value = await self.meter.get_latest_reading_kwh()
@@ -108,7 +112,7 @@ class LatestGasCubicMetersSensor(SensorEntity):
         self._attr_state_class = "total"
         self._attr_icon = "mdi:meter-gas-outline"
         self._attr_unique_id = self.meter.get_serial() + "__" + "gas_m3"
-    
+        self.update_interval = SCAN_INTERVAL
 
     async def async_update(self) -> None:
         self._attr_native_value = await self.meter.get_latest_reading()
