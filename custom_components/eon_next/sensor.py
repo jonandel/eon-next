@@ -1,21 +1,13 @@
 #!/usr/bin/env python3
 
 import logging
-
 from datetime import timedelta
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity
-)
-
-from homeassistant.const import (
-    UnitOfEnergy,
-    UnitOfVolume
-)
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.const import UnitOfEnergy, UnitOfVolume
 
 from . import DOMAIN
-from .eonnext import METER_TYPE_GAS, METER_TYPE_ELECTRIC
+from .eonnext import METER_TYPE_ELECTRIC, METER_TYPE_GAS
 
 _LOGGER = logging.getLogger(__name__)
 # Eon updates the reading only every two weeks ! - so set this to be much mroe than every minute, which is HA default.
@@ -36,13 +28,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
                 if meter.get_type() == METER_TYPE_ELECTRIC:
                     entities.append(LatestElectricKwhSensor(meter))
-                
+
                 if meter.get_type() == METER_TYPE_GAS:
                     entities.append(LatestGasCubicMetersSensor(meter))
                     entities.append(LatestGasKwhSensor(meter))
 
     async_add_entities(entities, update_before_add=True)
-
 
 
 class LatestReadingDateSensor(SensorEntity):
@@ -56,11 +47,9 @@ class LatestReadingDateSensor(SensorEntity):
         self._attr_icon = "mdi:calendar"
         self._attr_unique_id = self.meter.get_serial() + "__" + "reading_date"
         self.update_interval = SCAN_INTERVAL
-    
 
     async def async_update(self) -> None:
         self._attr_native_value = await self.meter.get_latest_reading_date()
-
 
 
 class LatestElectricKwhSensor(SensorEntity):
@@ -76,11 +65,9 @@ class LatestElectricKwhSensor(SensorEntity):
         self._attr_icon = "mdi:meter-electric-outline"
         self._attr_unique_id = self.meter.get_serial() + "__" + "electricity_kwh"
         self.update_interval = SCAN_INTERVAL
-    
 
     async def async_update(self) -> None:
         self._attr_native_value = await self.meter.get_latest_reading()
-
 
 
 class LatestGasKwhSensor(SensorEntity):
@@ -101,7 +88,6 @@ class LatestGasKwhSensor(SensorEntity):
         self._attr_native_value = await self.meter.get_latest_reading_kwh()
 
 
-
 class LatestGasCubicMetersSensor(SensorEntity):
     """Latest gas meter reading in kWh"""
 
@@ -118,4 +104,3 @@ class LatestGasCubicMetersSensor(SensorEntity):
 
     async def async_update(self) -> None:
         self._attr_native_value = await self.meter.get_latest_reading()
-
