@@ -10,6 +10,7 @@ A sensor will be created for each meter showing:
 For electric meters the readings are in kWh. For gas meter the readings are in m³.
 
 An additional sensor is created for gas meters showing the latest reading in kWh.
+The integration refreshes the data only every 12 hours (as eon only updates the data every two weeks!)
 
 
 ## Installation
